@@ -1,0 +1,107 @@
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #333;
+}
+
+.weather-card {
+    background: rgba(255, 255, 255, 0.3);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+#loader {
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+.hidden {
+    display: none;
+}
+
+#location {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.weather-emoji {
+    font-size: 6rem;
+    line-height: 1;
+    margin: 1rem 0;
+}
+
+.temperature {
+    font-size: 4rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.weather-description {
+    font-size: 1.2rem;
+    font-weight: 400;
+    text-transform: capitalize;
+    margin-top: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.details {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    padding-top: 1.5rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.detail-item span:first-child {
+    font-weight: 300;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.detail-item span:last-child {
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+/* Responsive Design for Mobile */
+@media (max-width: 480px) {
+    .weather-card {
+        padding: 1.5rem;
+    }
+
+    #location {
+        font-size: 1.5rem;
+    }
+
+    .weather-emoji {
+        font-size: 5rem;
+    }
+
+    .temperature {
+        font-size: 3.5rem;
+    }
+
+    .weather-description {
+        font-size: 1rem;
+    }
+}
