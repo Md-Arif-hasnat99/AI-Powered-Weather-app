@@ -3,30 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>🌤️ Weather App</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <div class="weather-card">
-        <div id="loader">Loading weather...</div>
-        <div id="weather-content" class="hidden">
-            <h1 id="location">City, Country</h1>
-            <div id="weather-emoji" class="weather-emoji">❓</div>
-            <div id="temperature" class="temperature">--°C</div>
-            <div id="weather-description" class="weather-description">--</div>
+    <div class="container">
+        <header class="header">
+            <p class="subtitle">Get current weather for your location</p>
             
-            <div class="details">
-                <div class="detail-item">
-                    <span>Humidity</span>
-                    <span id="humidity">--%</span>
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="cityInput" placeholder="🔍 Search for a city..." class="search-input">
+                    <button onclick="searchCity()" class="search-btn">
+                        <span class="search-icon">🔍</span>
+                    </button>
                 </div>
-                <div class="detail-item">
-                    <span>Wind Speed</span>
-                    <span id="wind-speed">-- m/s</span>
+                <button onclick="getWeather()" class="location-btn" title="Use current location">
+                    <span class="location-icon">📍</span>
+                </button>
+            </div>
+        </header>
+
+        <div class="weather-container">
+            <!-- Loading State -->
+            <div class="loading-card" id="loadingCard">
+                <div class="loading-spinner"></div>
+                <p>Getting your location...</p>
+            </div>
+
+            <!-- Error State -->
+            <div class="error-card hidden" id="errorCard">
+                <div class="error-icon">❌</div>
+                <h3>Oops! Something went wrong</h3>
+                <p id="errorMessage">Unable to get weather data</p>
+                <button class="retry-btn" onclick="getWeather()">🔄 Try Again</button>
+            </div>
+
+            <!-- Weather Card -->
+            <div class="weather-card hidden" id="weatherCard">
+                <div class="location-info">
+                    <h2 id="cityName">📍 City Name</h2>
+                    <p id="dateTime"></p>
+                </div>
+
+                <div class="current-weather">
+                    <div class="weather-main">
+                        <div class="temperature">
+                            <span id="temperature">--</span>
+                            <span class="temp-unit">°C</span>
+                        </div>
+                        <div class="weather-icon">
+                            <span id="weatherEmoji">🌤️</span>
+                        </div>
+                    </div>
+                    <div class="weather-description">
+                        <p id="weatherDescription">Loading...</p>
+                        <p class="feels-like">Feels like <span id="feelsLike">--</span>°C</p>
+                    </div>
+                </div>
+
+                <div class="weather-details">
+                    <div class="detail-item">
+                        <div class="detail-icon">💨</div>
+                        <div class="detail-info">
+                            <span class="detail-label">Wind Speed</span>
+                            <span class="detail-value" id="windSpeed">-- km/h</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">💧</div>
+                        <div class="detail-info">
+                            <span class="detail-label">Humidity</span>
+                            <span class="detail-value" id="humidity">--%</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">🌡️</div>
+                        <div class="detail-info">
+                            <span class="detail-label">Pressure</span>
+                            <span class="detail-value" id="pressure">-- hPa</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon">👁️</div>
+                        <div class="detail-info">
+                            <span class="detail-label">Visibility</span>
+                            <span class="detail-value" id="visibility">-- km</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather Card Refresh Button -->
+                <div class="weather-refresh-section">
+                    <button class="weather-refresh-btn" onclick="getWeather()" title="Refresh weather data">
+                        <span class="refresh-icon">🔄</span>
+                        <span class="refresh-text">Refresh Weather</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>Powered by OpenWeatherMap API</p>
+        </footer>
+
+        <!-- Chat Button -->
+        <div class="chat-button">
+            <span class="chat-icon">💬</span>
+            <div class="chat-pulse"></div>
+        </div>
+
+        <!-- Chatbot Modal -->
+        <div class="chat-modal" id="chatModal">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-header-info">
+                        <div class="bot-avatar">🤖</div>
+                        <div class="bot-info">
+                            <h3>Weather Assistant</h3>
+                            <p class="bot-status">Online</p>
+                        </div>
+                    </div>
+                    <button class="chat-close">✕</button>
+                </div>
+
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot-message">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-content">
+                            <p>Hello! I'm your Weather Assistant powered by Gemini AI. Ask me anything about weather, climate, or get personalized weather insights!</p>
+                            <span class="message-time">Just now</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="chatInput" placeholder="Ask about weather..." class="chat-input">
+                        <button class="chat-send">
+                            <span class="send-icon">🚀</span>
+                        </button>
+                    </div>
+                    <div class="chat-suggestions">
+                        <button class="suggestion-chip">What's the weather like today?</button>
+                        <button class="suggestion-chip">Tomorrow's forecast</button>
+                        <button class="suggestion-chip">Will it rain this week?</button>
+                        <button class="suggestion-chip">Weather tips</button>
+                    </div>
                 </div>
             </div>
         </div>
