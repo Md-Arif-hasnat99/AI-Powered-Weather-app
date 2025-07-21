@@ -242,7 +242,7 @@ If you encounter any issues or have questions:
 
 <div align="center">
 
-**Made with ❤️ by Md Arif Hasnat**
+**Made with ❤️ by Md Arif Hasnat
 
 ⭐ **Star this repo if you found it helpful!** ⭐
 
