@@ -2,7 +2,7 @@
 
 A beautiful, responsive weather application with integrated AI chatbot powered by Gemini AI. Get real-time weather information, forecasts, and intelligent weather insights all in one place.
 
-![Weather App Demo](https://img.shields.io/badge/Status-Live-success) ![Version](https://img.shields.io/badge/Version-1.0.0-blue) ![License](https://img.shields.io/badge/License-MIT-green)
+![Weather App Demo](https://img.shields.io/badge/Status-Live-success) ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## ✨ Features
 
