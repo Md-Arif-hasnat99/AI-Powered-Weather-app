@@ -252,6 +252,210 @@ function getWeatherEmoji(description) {
     return '🌤️';
 }
 
+// Change background based on weather condition
+function changeWeatherBackground(weatherCondition, isNight = false) {
+    const body = document.body;
+    
+    // Remove all existing weather classes
+    const weatherClasses = [
+        'weather-sunny', 'weather-cloudy', 'weather-rainy', 
+        'weather-stormy', 'weather-snowy', 'weather-misty', 
+        'weather-clear-night', 'weather-partly-cloudy'
+    ];
+    
+    weatherClasses.forEach(className => {
+        body.classList.remove(className);
+    });
+    
+    // Remove existing weather animation
+    removeWeatherAnimation();
+    
+    const condition = weatherCondition.toLowerCase();
+    
+    // Determine background class based on weather condition
+    let weatherClass = '';
+    let weatherType = '';
+    let animationType = '';
+    
+    if (condition.includes('clear')) {
+        if (isNight) {
+            weatherClass = 'weather-clear-night';
+            weatherType = 'Clear Night';
+            animationType = 'clear-night';
+        } else {
+            weatherClass = 'weather-sunny';
+            weatherType = 'Sunny';
+            animationType = 'sunny';
+        }
+    } else if (condition.includes('cloud')) {
+        if (condition.includes('few') || condition.includes('scattered')) {
+            weatherClass = 'weather-partly-cloudy';
+            weatherType = 'Partly Cloudy';
+            animationType = 'cloudy';
+        } else {
+            weatherClass = 'weather-cloudy';
+            weatherType = 'Cloudy';
+            animationType = 'cloudy';
+        }
+    } else if (condition.includes('rain') || condition.includes('drizzle') || condition.includes('shower')) {
+        weatherClass = 'weather-rainy';
+        weatherType = 'Rainy';
+        animationType = 'rain';
+    } else if (condition.includes('storm') || condition.includes('thunder')) {
+        weatherClass = 'weather-stormy';
+        weatherType = 'Stormy';
+        animationType = 'storm';
+    } else if (condition.includes('snow') || condition.includes('blizzard')) {
+        weatherClass = 'weather-snowy';
+        weatherType = 'Snowy';
+        animationType = 'snow';
+    } else if (condition.includes('mist') || condition.includes('fog') || condition.includes('haze')) {
+        weatherClass = 'weather-misty';
+        weatherType = 'Misty';
+        animationType = 'misty';
+    } else {
+        // Default to partly cloudy for unknown conditions
+        weatherClass = 'weather-partly-cloudy';
+        weatherType = 'Partly Cloudy';
+        animationType = 'cloudy';
+    }
+    
+    // Add the appropriate weather class
+    body.classList.add(weatherClass);
+    
+    // Add weather animation
+    createWeatherAnimation(animationType);
+    
+    console.log(`Weather background changed to: ${weatherClass} for condition: ${weatherCondition}`);
+}
+
+// Create weather animation overlay
+function createWeatherAnimation(animationType) {
+    const animationContainer = document.createElement('div');
+    animationContainer.className = `weather-animation ${animationType}-animation`;
+    animationContainer.id = 'weather-animation';
+    
+    // Insert after body start to be behind content but over background
+    document.body.insertBefore(animationContainer, document.body.firstChild);
+    
+    // Add specific animation effects for certain weather types
+    if (animationType === 'rain') {
+        createRainDrops(animationContainer);
+    } else if (animationType === 'snow') {
+        createSnowflakes(animationContainer);
+    } else if (animationType === 'storm') {
+        createLightningEffect(animationContainer);
+    }
+}
+
+// Remove existing weather animation
+function removeWeatherAnimation() {
+    const existingAnimation = document.getElementById('weather-animation');
+    if (existingAnimation) {
+        existingAnimation.remove();
+    }
+}
+
+// Create additional rain drops for enhanced effect
+function createRainDrops(container) {
+    for (let i = 0; i < 50; i++) {
+        const drop = document.createElement('div');
+        drop.style.position = 'absolute';
+        drop.style.width = '2px';
+        drop.style.height = '20px';
+        drop.style.background = 'linear-gradient(transparent, rgba(255,255,255,0.6), transparent)';
+        drop.style.left = Math.random() * 100 + '%';
+        drop.style.animationDuration = (Math.random() * 1 + 0.5) + 's';
+        drop.style.animationDelay = Math.random() * 2 + 's';
+        drop.style.animation = 'rainDrop linear infinite';
+        container.appendChild(drop);
+    }
+    
+    // Add rain drop animation to CSS
+    if (!document.getElementById('rain-animation-style')) {
+        const style = document.createElement('style');
+        style.id = 'rain-animation-style';
+        style.textContent = `
+            @keyframes rainDrop {
+                to {
+                    transform: translateY(100vh);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Create snowflakes for enhanced snow effect
+function createSnowflakes(container) {
+    for (let i = 0; i < 30; i++) {
+        const flake = document.createElement('div');
+        flake.innerHTML = '❄';
+        flake.style.position = 'absolute';
+        flake.style.color = 'rgba(255,255,255,0.8)';
+        flake.style.fontSize = (Math.random() * 15 + 10) + 'px';
+        flake.style.left = Math.random() * 100 + '%';
+        flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+        flake.style.animationDelay = Math.random() * 5 + 's';
+        flake.style.animation = 'snowFlake linear infinite';
+        container.appendChild(flake);
+    }
+    
+    // Add snowflake animation to CSS
+    if (!document.getElementById('snow-animation-style')) {
+        const style = document.createElement('style');
+        style.id = 'snow-animation-style';
+        style.textContent = `
+            @keyframes snowFlake {
+                to {
+                    transform: translateY(100vh) rotate(360deg);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Create lightning effect for storms
+function createLightningEffect(container) {
+    const lightning = document.createElement('div');
+    lightning.style.position = 'absolute';
+    lightning.style.top = '0';
+    lightning.style.left = '0';
+    lightning.style.width = '100%';
+    lightning.style.height = '100%';
+    lightning.style.background = 'rgba(255,255,255,0.1)';
+    lightning.style.opacity = '0';
+    lightning.style.animation = 'lightningFlash 6s ease-in-out infinite';
+    container.appendChild(lightning);
+    
+    // Add lightning animation to CSS
+    if (!document.getElementById('lightning-animation-style')) {
+        const style = document.createElement('style');
+        style.id = 'lightning-animation-style';
+        style.textContent = `
+            @keyframes lightningFlash {
+                0%, 90%, 100% { opacity: 0; }
+                2%, 4% { opacity: 0.8; }
+                6%, 8% { opacity: 0; }
+                10%, 12% { opacity: 0.9; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Check if it's nighttime based on current time and sunrise/sunset
+function isNightTime(sunriseTimestamp, sunsetTimestamp, timezoneOffset = 0) {
+    const now = new Date();
+    const currentTime = now.getTime() / 1000; // Convert to seconds
+    
+    // Adjust for timezone
+    const adjustedTime = currentTime + timezoneOffset;
+    
+    return adjustedTime < sunriseTimestamp || adjustedTime > sunsetTimestamp;
+}
+
 // Display weather data
 function displayWeatherData(data) {
     // Location and basic info
@@ -262,14 +466,20 @@ function displayWeatherData(data) {
     feelsLike.textContent = Math.round(data.main.feels_like);
     
     // Weather description and emoji
-    weatherDescription.textContent = data.weather[0].description;
-    weatherEmoji.textContent = getWeatherEmoji(data.weather[0].description);
+    const weatherCondition = data.weather[0].description;
+    weatherDescription.textContent = weatherCondition;
+    weatherEmoji.textContent = getWeatherEmoji(weatherCondition);
     
     // Weather details
     windSpeed.textContent = `${(data.wind.speed * 3.6).toFixed(1)} km/h`;
     humidity.textContent = `${data.main.humidity}%`;
     pressure.textContent = `${data.main.pressure} hPa`;
     visibility.textContent = data.visibility ? `${(data.visibility / 1000).toFixed(1)} km` : 'N/A';
+    
+    // Change background based on weather condition
+    const isNight = data.sys && data.sys.sunrise && data.sys.sunset ? 
+        isNightTime(data.sys.sunrise, data.sys.sunset, data.timezone) : false;
+    changeWeatherBackground(weatherCondition, isNight);
 }
 
 // Show/hide cards
