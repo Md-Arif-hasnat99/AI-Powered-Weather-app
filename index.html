@@ -19,9 +19,14 @@
                         <span class="search-icon">🔍</span>
                     </button>
                 </div>
-                <button onclick="getWeather()" class="location-btn" title="Use current location">
-                    <span class="location-icon">📍</span>
-                </button>
+                <div class="action-buttons">
+                    <button onclick="getWeather()" class="location-btn" title="Use current location">
+                        <span class="location-icon">📍</span>
+                    </button>
+                    <button onclick="getWeather()" class="refresh-btn" title="Refresh weather data">
+                        <span class="refresh-icon">🔄</span>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -92,14 +97,6 @@
                             <span class="detail-value" id="visibility">-- km</span>
                         </div>
                     </div>
-                </div>
-
-                <!-- Weather Card Refresh Button -->
-                <div class="weather-refresh-section">
-                    <button class="weather-refresh-btn" onclick="getWeather()" title="Refresh weather data">
-                        <span class="refresh-icon">🔄</span>
-                        <span class="refresh-text">Refresh Weather</span>
-                    </button>
                 </div>
             </div>
         </div>
