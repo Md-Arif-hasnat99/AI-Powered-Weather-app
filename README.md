@@ -67,7 +67,7 @@ Open `index.html` in your browser to see the app in action!
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/your-username/weather-app.git
+   git clone https://github.com/Md-Arif-hasnat99/weather-app.git
    cd weather-app
    ```
 
