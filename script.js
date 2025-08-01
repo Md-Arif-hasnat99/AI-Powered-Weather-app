@@ -1,3 +1,26 @@
+// Firebase Configuration
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBc-8Th9V_LBhDKSuYwRRpmGfu7SSg8mMQ",
+  authDomain: "ai-weather-app-7ab31.firebaseapp.com",
+  projectId: "ai-weather-app-7ab31",
+  storageBucket: "ai-weather-app-7ab31.firebasestorage.app",
+  messagingSenderId: "945827524705",
+  appId: "1:945827524705:web:1c06376c51d0ab2f533a20",
+  measurementId: "G-ESLV1ZW45Y"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
 // Weather App Configuration
 const API_KEY = 'd20cbcfe5b9316c59f30a10982c556e0'; // Replace with your OpenWeatherMap API key
 const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
@@ -44,9 +67,49 @@ const visibility = document.getElementById('visibility');
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM Content Loaded - Initializing app...');
+    
     updateDateTime();
     setInterval(updateDateTime, 60000); // Update every minute
     getWeather();
+    
+    // Add event listeners for buttons
+    const locationBtn = document.querySelector('.location-btn');
+    const refreshBtn = document.querySelector('.refresh-btn');
+    const searchBtn = document.querySelector('.search-btn');
+    const retryBtn = document.querySelector('.retry-btn');
+    
+    if (locationBtn) {
+        locationBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Location button clicked');
+            getWeather();
+        });
+    }
+    
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Refresh button clicked');
+            getWeather();
+        });
+    }
+    
+    if (searchBtn) {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Search button clicked');
+            searchCity();
+        });
+    }
+    
+    if (retryBtn) {
+        retryBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Retry button clicked');
+            getWeather();
+        });
+    }
     
     // Add enter key functionality to search input
     cityInput.addEventListener('keypress', function(e) {
@@ -57,6 +120,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Initialize chatbot
     initializeChatbot();
+    
+    console.log('App initialization complete');
 });
 
 // Get current date and time
@@ -76,36 +141,50 @@ function updateDateTime() {
 // Get user's current location
 function getCurrentLocation() {
     return new Promise((resolve, reject) => {
+        console.log('Attempting to get current location...');
+        
         if (!navigator.geolocation) {
+            console.error('Geolocation is not supported by this browser');
             reject(new Error('Geolocation is not supported by this browser'));
             return;
         }
 
+        console.log('Geolocation is supported, requesting position...');
+        
         navigator.geolocation.getCurrentPosition(
             position => {
+                console.log('Location obtained:', position.coords);
                 resolve({
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 });
             },
             error => {
+                console.error('Geolocation error:', error);
                 let errorMsg = 'Unable to get your location';
                 switch (error.code) {
                     case error.PERMISSION_DENIED:
-                        errorMsg = 'Location access denied. Please enable location services.';
+                        errorMsg = 'Location access denied. Please enable location services and allow location access for this website.';
+                        console.error('User denied the request for Geolocation.');
                         break;
                     case error.POSITION_UNAVAILABLE:
                         errorMsg = 'Location information unavailable.';
+                        console.error('Location information is unavailable.');
                         break;
                     case error.TIMEOUT:
                         errorMsg = 'Location request timed out.';
+                        console.error('The request to get user location timed out.');
+                        break;
+                    default:
+                        errorMsg = 'An unknown error occurred while retrieving location.';
+                        console.error('An unknown error occurred.');
                         break;
                 }
                 reject(new Error(errorMsg));
             },
             {
                 enableHighAccuracy: true,
-                timeout: 10000,
+                timeout: 15000, // Increased timeout
                 maximumAge: 300000 // 5 minutes
             }
         );
@@ -496,6 +575,8 @@ function showError(message) {
 
 // Main function to get weather
 async function getWeather() {
+    console.log('getWeather function called');
+    
     try {
         // Show loading
         showCard(loadingCard);
@@ -505,11 +586,18 @@ async function getWeather() {
             throw new Error('Please configure your OpenWeatherMap API key in script.js');
         }
         
+        console.log('Getting current location...');
+        
         // Get location
         const location = await getCurrentLocation();
         
+        console.log('Location received:', location);
+        console.log('Fetching weather data...');
+        
         // Fetch weather data
         const weatherData = await fetchWeatherData(location.latitude, location.longitude);
+        
+        console.log('Weather data received:', weatherData);
         
         // Display data
         displayWeatherData(weatherData);
@@ -517,6 +605,8 @@ async function getWeather() {
         // Show weather cards
         weatherCard.classList.remove('hidden');
         loadingCard.classList.add('hidden');
+        
+        console.log('Weather data displayed successfully');
         
     } catch (error) {
         console.error('Weather fetch error:', error);
