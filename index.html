@@ -15,15 +15,15 @@
             <div class="search-container">
                 <div class="search-box">
                     <input type="text" id="cityInput" placeholder="🔍 Search for a city..." class="search-input">
-                    <button onclick="searchCity()" class="search-btn">
+                    <button class="search-btn">
                         <span class="search-icon">🔍</span>
                     </button>
                 </div>
                 <div class="action-buttons">
-                    <button onclick="getWeather()" class="location-btn" title="Use current location">
+                    <button class="location-btn" title="Use current location">
                         <span class="location-icon">📍</span>
                     </button>
-                    <button onclick="getWeather()" class="refresh-btn" title="Refresh weather data">
+                    <button class="refresh-btn" title="Refresh weather data">
                         <span class="refresh-icon">🔄</span>
                     </button>
                 </div>
@@ -42,7 +42,7 @@
                 <div class="error-icon">❌</div>
                 <h3>Oops! Something went wrong</h3>
                 <p id="errorMessage">Unable to get weather data</p>
-                <button class="retry-btn" onclick="getWeather()">🔄 Try Again</button>
+                <button class="retry-btn">🔄 Try Again</button>
             </div>
 
             <!-- Weather Card -->
@@ -153,6 +153,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
