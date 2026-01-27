@@ -3,156 +3,237 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🌤️ Weather App</title>
+    <title>Weather</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <p class="subtitle">Get current weather for your location</p>
+
+    <!-- Dynamic Background -->
+    <div class="bg-layer" id="bgLayer"></div>
+    <div class="star-layer"></div>
+
+    <div class="app-container">
+        
+        <!-- Search Overlay (Hidden by default) -->
+        <div class="search-overlay hidden" id="searchOverlay">
+            <div class="search-bar">
+                <i class="ph ph-magnifying-glass"></i>
+                <input type="text" id="cityInput" placeholder="Enter city name">
+                <button id="closeSearch"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-view" id="mainView">
             
-            <!-- Search Bar -->
-            <div class="search-container">
-                <div class="search-box">
-                    <input type="text" id="cityInput" placeholder="🔍 Search for a city..." class="search-input">
-                    <button class="search-btn">
-                        <span class="search-icon">🔍</span>
-                    </button>
-                </div>
-                <div class="action-buttons">
-                    <button class="location-btn" title="Use current location">
-                        <span class="location-icon">📍</span>
-                    </button>
-                    <button class="refresh-btn" title="Refresh weather data">
-                        <span class="refresh-icon">🔄</span>
-                    </button>
-                </div>
-            </div>
-        </header>
-
-        <div class="weather-container">
-            <!-- Loading State -->
-            <div class="loading-card" id="loadingCard">
-                <div class="loading-spinner"></div>
-                <p>Getting your location...</p>
-            </div>
-
-            <!-- Error State -->
-            <div class="error-card hidden" id="errorCard">
-                <div class="error-icon">❌</div>
-                <h3>Oops! Something went wrong</h3>
-                <p id="errorMessage">Unable to get weather data</p>
-                <button class="retry-btn">🔄 Try Again</button>
-            </div>
-
-            <!-- Weather Card -->
-            <div class="weather-card hidden" id="weatherCard">
+            <!-- Context Header -->
+            <header class="top-bar">
+                <button class="icon-btn mobile-only" id="plusBtn"><i class="ph ph-list"></i></button>
+                
                 <div class="location-info">
-                    <h2 id="cityName">📍 City Name</h2>
-                    <p id="dateTime"></p>
+                    <span id="cityName">New York</span>
+                    <i class="ph ph-navigation-arrow"></i>
                 </div>
 
-                <div class="current-weather">
-                    <div class="weather-main">
-                        <div class="temperature">
-                            <span id="temperature">--</span>
-                            <span class="temp-unit">°C</span>
+                <!-- Desktop Search (Visible on Desktop) -->
+                <div class="desktop-search">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input type="text" id="desktopSearchInput" placeholder="Search city...">
+                </div>
+
+                <button class="icon-btn mobile-only" id="searchTrigger"><i class="ph ph-magnifying-glass"></i></button>
+            </header>
+
+            <!-- Hero Section -->
+            <section class="hero-section">
+                <!-- Date/Time pill logic can go here or above -->
+                <div class="hero-temp">
+                    <span id="tempValue">--</span><span class="degree">°</span>
+                </div>
+                <div class="hero-condition" id="weatherDesc">--</div>
+                <div class="hero-high-low">
+                    <span><i class="ph ph-arrow-up"></i> <span id="maxTemp">--</span>°</span>
+                    <span><i class="ph ph-arrow-down"></i> <span id="minTemp">--</span>°</span>
+                </div>
+                <!-- <div class="hero-feels">Feels like <span id="feelsLike">--</span>°</div> -->
+                <div class="hero-summary" id="dailySummary">
+                    --
+                </div>
+            </section>
+
+            <!-- Hourly Scroll -->
+            <section class="widget-container hourly-widget">
+                <!-- Graph SVG Overlay (Optional, complex to impl perfectly in vanilla without lib, will simulate) -->
+                <div class="hourly-list" id="hourlyList">
+                    <!-- JS Injected -->
+                </div>
+                <div class="widget-footer-link">
+                    <span>Hourly forecast</span>
+                    <i class="ph ph-caret-right"></i>
+                </div>
+            </section>
+
+            <!-- Tomorrow Outlook -->
+            <section class="widget-container outlook-widget">
+                <div class="outlook-content">
+                    <div class="outlook-text" id="outlookText">--</div>
+                </div>
+                <div class="pagination-dots">
+                    <span class="dot active"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+            </section>
+
+            <!-- Daily List -->
+            <section class="widget-container daily-widget">
+                <div class="daily-list" id="dailyList">
+                    <!-- JS injected -->
+                </div>
+                <div class="widget-footer-link">
+                    <span>5-day forecast</span>
+                    <i class="ph ph-caret-right"></i>
+                </div>
+            </section>
+
+            <!-- Activity / AQI / Pollen Stack -->
+            <section class="widget-container activity-aqi-stack">
+                
+                <!-- Activity Card -->
+                <div class="info-card activity-card">
+                    <div class="card-header">Running</div>
+                    <div class="activity-content">
+                        <div class="activity-icon"><i class="ph ph-sneaker-move"></i></div>
+                        <div class="activity-details">
+                            <span class="status-text" id="runStatus">--</span>
+                            <span class="status-desc" id="runDesc">--</span>
                         </div>
-                        <div class="weather-icon">
-                            <span id="weatherEmoji">🌤️</span>
+                        <div class="activity-rating">
+                            <i class="ph ph-smiley-meh" id="runFace"></i>
+                            <span id="runRating">--</span>
                         </div>
-                    </div>
-                    <div class="weather-description">
-                        <p id="weatherDescription">Loading...</p>
-                        <p class="feels-like">Feels like <span id="feelsLike">--</span>°C</p>
                     </div>
                 </div>
 
-                <div class="weather-details">
-                    <div class="detail-item">
-                        <div class="detail-icon">💨</div>
-                        <div class="detail-info">
-                            <span class="detail-label">Wind Speed</span>
-                            <span class="detail-value" id="windSpeed">-- km/h</span>
-                        </div>
+                <!-- AQI Card -->
+                <div class="info-card aqi-card">
+                    <div class="card-header">
+                        <span>AQI</span>
+                        <i class="ph ph-info"></i>
                     </div>
-                    <div class="detail-item">
-                        <div class="detail-icon">💧</div>
-                        <div class="detail-info">
-                            <span class="detail-label">Humidity</span>
-                            <span class="detail-value" id="humidity">--%</span>
-                        </div>
+                    <div class="aqi-main">
+                        <span id="aqiStatus">--</span>
+                        <span class="aqi-num" id="aqiVal">--</span>
                     </div>
-                    <div class="detail-item">
-                        <div class="detail-icon">🌡️</div>
-                        <div class="detail-info">
-                            <span class="detail-label">Pressure</span>
-                            <span class="detail-value" id="pressure">-- hPa</span>
-                        </div>
+                    <div class="aqi-bar-container">
+                        <div class="aqi-track"></div>
+                        <div class="aqi-fill" id="aqiFill"></div>
                     </div>
-                    <div class="detail-item">
-                        <div class="detail-icon">👁️</div>
-                        <div class="detail-info">
-                            <span class="detail-label">Visibility</span>
-                            <span class="detail-value" id="visibility">-- km</span>
+                </div>
+
+                <!-- Pollen (Estimated) -->
+                <div class="info-card pollen-card">
+                    <div class="card-header">Pollen</div>
+                    <div class="pollen-grid">
+                        <div class="pollen-item">
+                            <i class="ph ph-tree" id="treeIcon"></i>
+                            <span class="p-name">Tree</span>
+                            <span class="p-val" id="treePollen">--</span>
+                        </div>
+                        <div class="pollen-item">
+                            <i class="ph ph-plant" id="grassIcon"></i>
+                            <span class="p-name">Grass</span>
+                            <span class="p-val" id="grassPollen">--</span>
+                        </div>
+                        <div class="pollen-item">
+                            <i class="ph ph-flower" id="ragweedIcon"></i>
+                            <span class="p-name">Ragweed</span>
+                            <span class="p-val" id="ragweedPollen">--</span>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <footer class="footer">
-            <p>Powered by OpenWeatherMap API</p>
-        </footer>
+            </section>
 
-        <!-- Chat Button -->
-        <div class="chat-button">
-            <span class="chat-icon">💬</span>
-            <div class="chat-pulse"></div>
-        </div>
+            <!-- Details Grid -->
+            <section class="details-grid-container">
+                <!-- UV -->
+                <div class="detail-box">
+                    <div class="d-head"><i class="ph ph-sun"></i> UV index</div>
+                    <div class="d-big" id="uvLevel">Low</div>
+                    <div class="d-sub" id="uvDesc">Low risk of harm</div>
+                    <div class="uv-bar"><div class="uv-dot" id="uvDot" style="left: 0%"></div></div>
+                </div>
 
-        <!-- Chatbot Modal -->
+                <!-- Humidity -->
+                <div class="detail-box">
+                    <div class="d-head"><i class="ph ph-drop"></i> Humidity</div>
+                    <div class="d-big"><span id="humidVal">--</span>%</div>
+                    <div class="d-sub" id="humidDesc">--</div>
+                    <div class="humid-bar"><div class="humid-fill" id="humidFill" style="width: 0%"></div></div>
+                </div>
+
+                <!-- Wind -->
+                <div class="detail-box">
+                    <div class="d-head"><i class="ph ph-wind"></i> Wind</div>
+                    <div class="wind-wrapper">
+                        <div class="compass">
+                            <span class="dir n">N</span>
+                            <span class="dir e">E</span>
+                            <span class="dir s">S</span>
+                            <span class="dir w">W</span>
+                            <div class="compass-arrow-container" id="compassArrow">
+                                <i class="ph ph-arrow-up"></i>
+                            </div>
+                            <div class="wind-center">
+                                <span id="windVal">--</span>
+                                <small>km/h</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-sub text-center" id="windDesc">It's calm</div>
+                </div>
+
+                <!-- Dew Point -->
+                <div class="detail-box">
+                    <div class="d-head"><i class="ph ph-drop-half"></i> Dew point</div>
+                    <div class="d-big"><span id="dewVal">--</span>°</div>
+                    <div class="d-sub" id="dewDesc">--</div>
+                </div>
+            </section>
+
+            <footer class="bottom-spacer"></footer>
+        </main>
+        
+        <!-- Chat FAB -->
+        <button class="chat-fab" id="chatFab">
+            <i class="ph ph-sparkle"></i>
+        </button>
+
+        <!-- Chat Modal -->
         <div class="chat-modal" id="chatModal">
-            <div class="chat-container">
-                <div class="chat-header">
-                    <div class="chat-header-info">
-                        <div class="bot-avatar">🤖</div>
-                        <div class="bot-info">
-                            <h3>Weather Assistant</h3>
-                            <p class="bot-status">Online</p>
-                        </div>
-                    </div>
-                    <button class="chat-close">✕</button>
-                </div>
-
-                <div class="chat-messages" id="chatMessages">
-                    <div class="message bot-message">
-                        <div class="message-avatar">🤖</div>
-                        <div class="message-content">
-                            <p>Hello! I'm your Weather Assistant powered by Gemini AI. Ask me anything about weather, climate, or get personalized weather insights!</p>
-                            <span class="message-time">Just now</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="chat-input-container">
-                    <div class="chat-input-wrapper">
-                        <input type="text" id="chatInput" placeholder="Ask about weather..." class="chat-input">
-                        <button class="chat-send">
-                            <span class="send-icon">🚀</span>
-                        </button>
-                    </div>
-                    <div class="chat-suggestions">
-                        <button class="suggestion-chip">What's the weather like today?</button>
-                        <button class="suggestion-chip">Tomorrow's forecast</button>
-                        <button class="suggestion-chip">Will it rain this week?</button>
-                        <button class="suggestion-chip">Weather tips</button>
-                    </div>
-                </div>
-            </div>
+             <div class="chat-head">
+                 <div class="chat-title">
+                     <span>Weather Assistant</span>
+                     <small>AI Powered 🤖</small>
+                 </div>
+                 <button class="close-chat" id="closeChat"><i class="ph ph-caret-down"></i></button>
+             </div>
+             <div class="chat-body" id="chatMessages">
+                 <div class="chat-bubble ai">Hi! Check the latest forecast above.</div>
+             </div>
+             <div class="chat-foot">
+                 <input type="text" id="chatInput" placeholder="Ask details...">
+                 <button id="sendMessage"><i class="ph ph-paper-plane-right"></i></button>
+             </div>
         </div>
     </div>
-
+    
     <script type="module" src="script.js"></script>
 </body>
 </html>
